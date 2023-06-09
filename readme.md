@@ -22,16 +22,6 @@ Before running the project, make sure you have the following installed:
 $ npm install
 ```
 
-4. Add this line to the package.json file:
-
-```
-"scripts": {
-    //...
-    "dev": "nodemon index.js",
-    //...
-  },
-```
-
 ### Setup
 
 1. Create a .env file in the root directory of the project.
