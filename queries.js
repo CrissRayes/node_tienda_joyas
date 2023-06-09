@@ -1,8 +1,18 @@
 const pool = require('./db');
 const format = require('pg-format')
 
+
+const getTotalJoyas = async () => {
+  const sqlQuery = "SELECT * FROM inventario"
+  const { rows } = await pool.query(sqlQuery)
+  const count = rows.length
+  return count
+}
+
+
+
 const getJoyas = async (queryStrings) => {
-  const { limits = 3, page = 1, order_by = "precio_ASC" } = queryStrings
+  const { limits = 3, page = 1, order_by = "id_ASC" } = queryStrings
   const [campo, direccion] = order_by.split('_')
   const offset = (page - 1) * limits
   const sqlQuery = format(`
@@ -17,10 +27,12 @@ const getJoyas = async (queryStrings) => {
 }
 
 const getJoyasFiltradas = async (queryStrings) => {
-  //
+  const { precio_max, precio_min, categoria, metal } = queryStrings
+
 }
 
 module.exports = {
+  getTotalJoyas,
   getJoyas,
   getJoyasFiltradas
 }
