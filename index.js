@@ -8,12 +8,10 @@ const port = process.env.PORT || 3000
 
 app.listen(port, console.log(`Server running on http://localhost:${port}`))
 
-
 // Middlewares
 app.use(cors())
 app.use(express.json())
 
-// contar todas las joyas como una const
 const countJoyas = async () => {
   try {
     const count = await getTotalJoyas()
@@ -23,8 +21,8 @@ const countJoyas = async () => {
   }
 }
 
-const formatHATEOAS = async (joyas, page) => {
-
+const formatHATEOAS = async (joyas, page, limits, order_by) => {
+  let HATEOAS = {}
   const totalJoyas = await countJoyas()
 
   const results = joyas.map(joya => {
@@ -34,6 +32,9 @@ const formatHATEOAS = async (joyas, page) => {
     }
   })
 
+  if (!page) {
+    page = 1
+  }
   const count = joyas.length * page
 
   const nextPage = () => {
@@ -52,7 +53,7 @@ const formatHATEOAS = async (joyas, page) => {
     }
   }
 
-  const HATEOAS = {
+  HATEOAS = {
     totalCount: totalJoyas,
     thisCount: count,
     next: nextPage(),
@@ -64,9 +65,9 @@ const formatHATEOAS = async (joyas, page) => {
 
 app.get('/joyas', async (req, res) => {
   const queryStrings = req.query
-  const { page } = queryStrings
+  const { page, limits, order_by } = queryStrings
   const joyas = await getJoyas(queryStrings)
-  const HATEOAS = await formatHATEOAS(joyas, page)
+  const HATEOAS = await formatHATEOAS(joyas, page, limits, order_by)
   res.status(200).json(HATEOAS)
 })
 
@@ -74,4 +75,8 @@ app.get('/joyas/filtros', async (req, res) => {
   const queryStrings = req.query
   const joyas = await getJoyasFiltradas(queryStrings)
   res.status(200).json(joyas)
-}) 
+})
+
+app.get("*"), (req, res) => {
+  res.status(404).send("Route not found")
+}
